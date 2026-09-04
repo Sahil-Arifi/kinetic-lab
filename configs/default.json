@@ -1,0 +1,10 @@
+{
+  "physicsHz": 120,
+  "maxCatchUpSteps": 5,
+  "schedulerIntervalMs": 8,
+  "snapshotHz": 60,
+  "maxGrabSpeed": 12,
+  "grabStiffness": 120,
+  "grabDamping": 18,
+  "maxBodies": 200
+}
