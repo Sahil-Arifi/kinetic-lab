@@ -1,4 +1,9 @@
-import { parseScene, type BodyDocument, type SceneDocument, type Vec3 } from '../engine/scene-schema';
+import {
+  parseScene,
+  type BodyDocument,
+  type SceneDocument,
+  type Vec3,
+} from '../engine/scene-schema';
 
 type BodyType = BodyDocument['type'];
 export type BodyPatch = Partial<Omit<BodyDocument, 'id' | 'type'>>;
@@ -40,8 +45,12 @@ export function addBody(scene: SceneDocument, type: BodyType): SceneDocument {
     targetCup: { x: 1.2, y: 0.5, z: 1.2 },
   };
   const labels: Record<BodyType, string> = {
-    sphere: 'Marble', block: 'Block', domino: 'Domino', ramp: 'Ramp',
-    fixedBarrier: 'Barrier', targetCup: 'Target cup',
+    sphere: 'Marble',
+    block: 'Block',
+    domino: 'Domino',
+    ramp: 'Ramp',
+    fixedBarrier: 'Barrier',
+    targetCup: 'Target cup',
   };
   const body: BodyDocument = {
     id: nextId(current, type),
@@ -53,7 +62,8 @@ export function addBody(scene: SceneDocument, type: BodyType): SceneDocument {
     mass: 1,
     friction: 0.5,
     restitution: 0.1,
-    bodyMode: type === 'ramp' || type === 'fixedBarrier' || type === 'targetCup' ? 'fixed' : 'dynamic',
+    bodyMode:
+      type === 'ramp' || type === 'fixedBarrier' || type === 'targetCup' ? 'fixed' : 'dynamic',
   };
   return parseScene({ ...current, bodies: [...current.bodies, body] });
 }

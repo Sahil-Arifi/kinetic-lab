@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+test-results
+playwright-report
+.local
+pnpm-lock.yaml
+artifacts/physics-validation.json

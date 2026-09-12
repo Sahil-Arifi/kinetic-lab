@@ -12,8 +12,13 @@ const worlds: PhysicsWorld[] = [];
 const zero = { x: 0, y: 0, z: 0 };
 function isolated(): SceneDocument {
   return {
-    schemaVersion: 1, id: 'experiment', name: 'Experiment', seed: 1, gravity: zero,
-    bodies: [primitive('sphere', 'ball', { x: 0, y: 10, z: 0 })], goals: [],
+    schemaVersion: 1,
+    id: 'experiment',
+    name: 'Experiment',
+    seed: 1,
+    gravity: zero,
+    bodies: [primitive('sphere', 'ball', { x: 0, y: 10, z: 0 })],
+    goals: [],
   };
 }
 function world(scene = isolated()): PhysicsWorld {
@@ -21,8 +26,12 @@ function world(scene = isolated()): PhysicsWorld {
   worlds.push(result);
   return result;
 }
-beforeAll(async () => { await initPhysics(); });
-afterEach(() => { worlds.splice(0).forEach((item) => item.dispose()); });
+beforeAll(async () => {
+  await initPhysics();
+});
+afterEach(() => {
+  worlds.splice(0).forEach((item) => item.dispose());
+});
 
 describe('real Rapier world', () => {
   it('builds every authored primitive, solid cup walls, and a real sensor', () => {
@@ -65,11 +74,15 @@ describe('real Rapier world', () => {
     const scene = isolated();
     scene.gravity = { x: 0, y: -9.81, z: 0 };
     scene.bodies[0]!.position.y = 1;
-    scene.bodies.push(primitive('block', 'floor', zero, { bodyMode: 'fixed', dimensions: { x: 5, y: 0.2, z: 5 } }));
+    scene.bodies.push(
+      primitive('block', 'floor', zero, { bodyMode: 'fixed', dimensions: { x: 5, y: 0.2, z: 5 } }),
+    );
     const physics = world(scene);
     const events = [];
     for (let i = 0; i < 600; i++) events.push(...physics.step().collisions);
-    expect(events.some((event) => event.started && [event.bodyA, event.bodyB].includes('ball'))).toBe(true);
+    expect(
+      events.some((event) => event.started && [event.bodyA, event.bodyB].includes('ball')),
+    ).toBe(true);
     expect(physics.metrics()).toEqual({ activeBodies: 0, sleepingBodies: 1 });
     physics.setGravity({ x: 0, y: 9.81, z: 0 });
     expect(physics.metrics()).toEqual({ activeBodies: 1, sleepingBodies: 0 });
@@ -99,6 +112,10 @@ describe('real Rapier world', () => {
       expect(physics.snapshot()).toEqual(initial);
       expect(physics.world.bodies.len()).toBe(scene.bodies.length);
       expect(physics.world.impulseJoints.len()).toBe(0);
+      for (const body of physics.bodies.values()) {
+        expect(body.linvel()).toEqual(zero);
+        expect(body.angvel()).toEqual(zero);
+      }
     }
   });
 
@@ -118,7 +135,8 @@ describe('real Rapier world', () => {
     function run(pattern: number[]) {
       const physics = world();
       const clock = new FixedClock();
-      let now = 0, index = 0;
+      let now = 0,
+        index = 0;
       clock.advance(now, () => physics.step());
       while (now < 3000) {
         now = Math.min(3000, now + pattern[index++ % pattern.length]!);
@@ -146,14 +164,22 @@ describe('real Rapier world', () => {
       let lastDominoTilt = 0;
       for (let i = 0; i < 1200; i++) {
         const events = physics.step();
-        events.collisions.filter((event) => event.started).forEach((event) => contacts.add([event.bodyA, event.bodyB].sort().join('|')));
+        events.collisions
+          .filter((event) => event.started)
+          .forEach((event) => contacts.add([event.bodyA, event.bodyB].sort().join('|')));
         goals.push(...events.goals);
-        lastDominoTilt = Math.max(lastDominoTilt, Math.abs(physics.bodies.get('domino-10')!.rotation().z));
+        lastDominoTilt = Math.max(
+          lastDominoTilt,
+          Math.abs(physics.bodies.get('domino-10')!.rotation().z),
+        );
       }
       expect(goals).toHaveLength(1);
       completionTicks.push(goals[0]!.tick);
       for (let ramp = 1; ramp <= 3; ramp++) expect(contacts.has(`marble|ramp-${ramp}`)).toBe(true);
-      for (let domino = 1; domino < 10; domino++) expect(contacts.has([`domino-${domino}`, `domino-${domino + 1}`].sort().join('|'))).toBe(true);
+      for (let domino = 1; domino < 10; domino++)
+        expect(contacts.has([`domino-${domino}`, `domino-${domino + 1}`].sort().join('|'))).toBe(
+          true,
+        );
       expect(lastDominoTilt).toBeGreaterThan(0.7);
       const marble = physics.bodies.get('marble')!.translation();
       expect(marble.x).toBeGreaterThan(6.57);
@@ -171,7 +197,9 @@ describe('damped spring grabbing', () => {
     expect(physics.beginGrab('missing', zero)).toBe(false);
     expect(physics.beginGrab('ball', body.translation())).toBe(true);
     let handle: RAPIER.RigidBody | undefined;
-    physics.world.bodies.forEach((item) => { if (item.isKinematic()) handle = item; });
+    physics.world.bodies.forEach((item) => {
+      if (item.isKinematic()) handle = item;
+    });
     expect(handle!.numColliders()).toBe(0);
     expect(physics.world.impulseJoints.len()).toBe(1);
     physics.moveGrab({ x: 50, y: 10, z: 0 });
