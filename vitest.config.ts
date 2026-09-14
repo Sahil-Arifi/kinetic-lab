@@ -6,9 +6,15 @@ export default defineConfig({
     testTimeout: 30000,
     coverage: {
       provider: 'v8',
-      include: ['src/engine/**/*.ts', 'src/input/**/*.ts', 'src/editor/**/*.ts', 'src/metrics/**/*.ts', 'src/scenes/**/*.ts'],
+      include: [
+        'src/engine/**/*.ts',
+        'src/input/**/*.ts',
+        'src/editor/**/*.ts',
+        'src/metrics/**/*.ts',
+        'src/scenes/**/*.ts',
+      ],
       reporter: ['text', 'json-summary', 'html'],
-      thresholds: { branches: 85, functions: 85, lines: 85, statements: 85 },
+      thresholds: { perFile: true, branches: 85, functions: 85, lines: 85, statements: 85 },
     },
   },
 });
