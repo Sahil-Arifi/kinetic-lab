@@ -180,7 +180,9 @@ for (let run = 0; run < fixtures.repeatability.repeats; run++) {
   assert.equal(adjacentDominoContacts, 9);
   assert((maxDominoTilts.get('domino-10') ?? 0) > 0.7);
   const position = { ...marble.bodies.get('marble')!.translation() };
-  assert(position.x > 6.57 && position.x < 8.13 && position.y < 0.6);
+  assert(position.x > 6.57 && position.x < 8.13);
+  assert(position.y > 0.07 && position.y < 0.6);
+  assert(Math.abs(position.z) < 0.78);
   marbleRuns.push({
     run: run + 1,
     goalTick: goalTicks[0]!,
