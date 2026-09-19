@@ -1,5 +1,9 @@
 allowBuilds:
   esbuild: true
+saveExact: true
+strictPeerDependencies: true
+overrides:
+  '@react-three/drei>@mediapipe/tasks-vision': '-'
 minimumReleaseAgeExclude:
   - '@typescript-eslint/eslint-plugin@8.70.1'
   - '@typescript-eslint/parser@8.70.1'
@@ -12,4 +16,3 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/utils@8.70.1'
   - '@typescript-eslint/visitor-keys@8.70.1'
   - typescript-eslint@8.70.1
-
