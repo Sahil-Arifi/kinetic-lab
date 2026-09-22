@@ -1,0 +1,948 @@
+{
+  "scope": "Implementation validation of the recorded fixtures, not proof of general scientific accuracy or a performance benchmark.",
+  "generatedAt": "2026-09-22T04:14:15.302Z",
+  "environment": {
+    "platform": "win32",
+    "architecture": "x64",
+    "node": "v24.19.0",
+    "rapierVersion": "0.20.0"
+  },
+  "timestepSeconds": 0.008333333333333333,
+  "solverIterations": 8,
+  "fixtureSha256": "a44c578e8bf748df2bf21e831935e079370331f858c966d44a24f00e0545c62b",
+  "marbleRunSha256": "2f884e14c71ad4057e66c637c3a1241f80ff41c1fa027600178066c1ad8c1ea5",
+  "fixtures": {
+    "marbleRun": {
+      "schemaVersion": 1,
+      "id": "marble-run",
+      "name": "The cascade",
+      "seed": 2026,
+      "gravity": {
+        "x": 0,
+        "y": -9.81,
+        "z": 0
+      },
+      "bodies": [
+        {
+          "id": "workbench",
+          "name": "Workbench",
+          "type": "block",
+          "position": {
+            "x": 0.5,
+            "y": -0.25,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 19,
+            "y": 0.3,
+            "z": 5
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "ramp-1",
+          "name": "Ramp 1",
+          "type": "ramp",
+          "position": {
+            "x": -5,
+            "y": 2.35,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.04,
+            "y": 0.2,
+            "z": 1.2
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "ramp-2",
+          "name": "Ramp 2",
+          "type": "ramp",
+          "position": {
+            "x": -2.059800266476275,
+            "y": 1.7539920076148166,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.04,
+            "y": 0.2,
+            "z": 1.2
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "ramp-3",
+          "name": "Ramp 3",
+          "type": "ramp",
+          "position": {
+            "x": 0.8803994670474502,
+            "y": 1.1579840152296328,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.04,
+            "y": 0.2,
+            "z": 1.2
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "rail-1-near",
+          "name": "Ramp 1 rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": -5,
+            "y": 2.5300000000000002,
+            "z": -0.61
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.06,
+            "y": 0.4,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "rail-1-far",
+          "name": "Ramp 1 rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": -5,
+            "y": 2.5300000000000002,
+            "z": 0.61
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.06,
+            "y": 0.4,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "rail-2-near",
+          "name": "Ramp 2 rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": -2.059800266476275,
+            "y": 1.9339920076148165,
+            "z": -0.61
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.06,
+            "y": 0.4,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "rail-2-far",
+          "name": "Ramp 2 rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": -2.059800266476275,
+            "y": 1.9339920076148165,
+            "z": 0.61
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.06,
+            "y": 0.4,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "rail-3-near",
+          "name": "Ramp 3 rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": 0.8803994670474502,
+            "y": 1.3379840152296327,
+            "z": -0.61
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.06,
+            "y": 0.4,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "rail-3-far",
+          "name": "Ramp 3 rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": 0.8803994670474502,
+            "y": 1.3379840152296327,
+            "z": 0.61
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.2
+          },
+          "dimensions": {
+            "x": 3.06,
+            "y": 0.4,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "marble",
+          "name": "Marble",
+          "type": "sphere",
+          "position": {
+            "x": -6.15,
+            "y": 2.98,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 0.48,
+            "y": 0.48,
+            "z": 0.48
+          },
+          "mass": 3,
+          "friction": 0.28,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-stage",
+          "name": "Domino stage",
+          "type": "block",
+          "position": {
+            "x": 4.25,
+            "y": 0.59,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 4.7,
+            "y": 0.24,
+            "z": 1.3
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "domino-1",
+          "name": "Domino 01",
+          "type": "domino",
+          "position": {
+            "x": 2.7,
+            "y": 1.1842652122975126,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-2",
+          "name": "Domino 02",
+          "type": "domino",
+          "position": {
+            "x": 3.02,
+            "y": 1.1586104587909294,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-3",
+          "name": "Domino 03",
+          "type": "domino",
+          "position": {
+            "x": 3.3400000000000003,
+            "y": 1.132955705284346,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-4",
+          "name": "Domino 04",
+          "type": "domino",
+          "position": {
+            "x": 3.66,
+            "y": 1.1073009517777628,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-5",
+          "name": "Domino 05",
+          "type": "domino",
+          "position": {
+            "x": 3.9800000000000004,
+            "y": 1.0816461982711796,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-6",
+          "name": "Domino 06",
+          "type": "domino",
+          "position": {
+            "x": 4.300000000000001,
+            "y": 1.0559914447645964,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-7",
+          "name": "Domino 07",
+          "type": "domino",
+          "position": {
+            "x": 4.62,
+            "y": 1.0303366912580132,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-8",
+          "name": "Domino 08",
+          "type": "domino",
+          "position": {
+            "x": 4.94,
+            "y": 1.00468193775143,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-9",
+          "name": "Domino 09",
+          "type": "domino",
+          "position": {
+            "x": 5.26,
+            "y": 0.9790271842448468,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "domino-10",
+          "name": "Domino 10",
+          "type": "domino",
+          "position": {
+            "x": 5.58,
+            "y": 0.9533724307382635,
+            "z": 0.25
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": -0.08
+          },
+          "dimensions": {
+            "x": 0.1,
+            "y": 0.7,
+            "z": 0.28
+          },
+          "mass": 0.12,
+          "friction": 1.2,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        },
+        {
+          "id": "stage-near",
+          "name": "Front safety rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": 4.2,
+            "y": 1,
+            "z": -0.72
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 4.8,
+            "y": 0.6,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "stage-far",
+          "name": "Back safety rail",
+          "type": "fixedBarrier",
+          "position": {
+            "x": 4.2,
+            "y": 1,
+            "z": 0.72
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 4.8,
+            "y": 0.6,
+            "z": 0.1
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "target-cup",
+          "name": "Finish cup",
+          "type": "targetCup",
+          "position": {
+            "x": 7.35,
+            "y": 0.7,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 1.8,
+            "y": 1.5,
+            "z": 1.8
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "ramp-support-1",
+          "name": "Ramp 1 support",
+          "type": "block",
+          "position": {
+            "x": -5,
+            "y": 1.085,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 0.4,
+            "y": 2.37,
+            "z": 0.8
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "ramp-support-2",
+          "name": "Ramp 2 support",
+          "type": "block",
+          "position": {
+            "x": -2.059800266476275,
+            "y": 0.7869960038074082,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 0.4,
+            "y": 1.7739920076148166,
+            "z": 0.8
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "ramp-support-3",
+          "name": "Ramp 3 support",
+          "type": "block",
+          "position": {
+            "x": 0.8803994670474502,
+            "y": 0.48899200761481637,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 0.4,
+            "y": 1.1779840152296328,
+            "z": 0.8
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "stage-support-1",
+          "name": "Stage support 1",
+          "type": "block",
+          "position": {
+            "x": 3,
+            "y": 0.24510694044254533,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 0.4,
+            "y": 0.6902138808850906,
+            "z": 0.8
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        },
+        {
+          "id": "stage-support-2",
+          "name": "Stage support 2",
+          "type": "block",
+          "position": {
+            "x": 5.5,
+            "y": 0.14489305955745463,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 0.4,
+            "y": 0.4897861191149092,
+            "z": 0.8
+          },
+          "mass": 1,
+          "friction": 0.5,
+          "restitution": 0.05,
+          "bodyMode": "fixed"
+        }
+      ],
+      "goals": [
+        {
+          "id": "marble-home",
+          "bodyId": "marble",
+          "sensorBodyId": "target-cup",
+          "dwellTicks": 45
+        }
+      ]
+    },
+    "isolated": {
+      "schemaVersion": 1,
+      "id": "isolated",
+      "name": "Isolated sphere",
+      "seed": 2026,
+      "gravity": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "bodies": [
+        {
+          "id": "ball",
+          "name": "Sphere",
+          "type": "sphere",
+          "position": {
+            "x": 0,
+            "y": 20,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "dimensions": {
+            "x": 0.48,
+            "y": 0.48,
+            "z": 0.48
+          },
+          "mass": 3,
+          "friction": 0.28,
+          "restitution": 0.05,
+          "bodyMode": "dynamic"
+        }
+      ],
+      "goals": []
+    },
+    "freeFall": {
+      "ticks": 120,
+      "gravity": {
+        "x": 0,
+        "y": -9.81,
+        "z": 0
+      }
+    },
+    "momentum": {
+      "ticks": 240,
+      "velocity": {
+        "x": 1.5,
+        "y": -0.4,
+        "z": 0.7
+      }
+    },
+    "reset": {
+      "repeats": 5,
+      "simulatedTicks": 90,
+      "impulse": {
+        "x": 3,
+        "y": 4,
+        "z": 1
+      }
+    },
+    "scheduling": {
+      "durationMs": 6000,
+      "patternsMs": [
+        [
+          16.666666666666668
+        ],
+        [
+          6.944444444444445
+        ],
+        [
+          4,
+          12,
+          27,
+          7
+        ]
+      ],
+      "impulseTick": 120,
+      "gravityTick": 240
+    },
+    "repeatability": {
+      "repeats": 5,
+      "simulatedTicks": 1440
+    }
+  },
+  "tolerances": {
+    "freeFallPositionMeters": 0.05,
+    "momentumVelocityMetersPerSecond": 0.00001,
+    "momentumPositionMeters": 0.002,
+    "resetAuthoredState": 0.000001,
+    "resetSnapshotDifference": 0,
+    "schedulingStateDifference": 0.000001,
+    "repeatedGoalTickDifference": 0
+  },
+  "results": {
+    "freeFall": {
+      "durationSeconds": 1,
+      "expectedY": 15.094999999999999,
+      "observedY": 15.089902877807617,
+      "absoluteErrorMeters": 0.005097122192381676,
+      "pass": true
+    },
+    "zeroGravityMomentum": {
+      "durationSeconds": 2,
+      "velocityErrorMetersPerSecond": 1.332800369959943e-8,
+      "positionErrorMeters": 0.001660639690277929,
+      "pass": true
+    },
+    "resetDeterminism": {
+      "repeats": 5,
+      "bodiesComparedPerReset": 30,
+      "maxAuthoredStateError": 2.305185902268375e-7,
+      "maxRepeatedSnapshotDifference": 0,
+      "pass": true
+    },
+    "fixedTimestepIndependence": {
+      "patterns": [
+        "60 Hz",
+        "144 Hz",
+        "4,12,27,7 ms"
+      ],
+      "ticksPerRun": 720,
+      "maxStateDifference": 0,
+      "droppedTimeSeconds": 0,
+      "pass": true
+    },
+    "marbleRunRepeatability": {
+      "runs": [
+        {
+          "run": 1,
+          "goalTick": 593,
+          "rampContacts": 3,
+          "adjacentDominoContacts": 9,
+          "finalMarblePosition": {
+            "x": 7.873659133911133,
+            "y": 0.3099192678928375,
+            "z": 0.4047262668609619
+          }
+        },
+        {
+          "run": 2,
+          "goalTick": 593,
+          "rampContacts": 3,
+          "adjacentDominoContacts": 9,
+          "finalMarblePosition": {
+            "x": 7.873659133911133,
+            "y": 0.3099192678928375,
+            "z": 0.4047262668609619
+          }
+        },
+        {
+          "run": 3,
+          "goalTick": 593,
+          "rampContacts": 3,
+          "adjacentDominoContacts": 9,
+          "finalMarblePosition": {
+            "x": 7.873659133911133,
+            "y": 0.3099192678928375,
+            "z": 0.4047262668609619
+          }
+        },
+        {
+          "run": 4,
+          "goalTick": 593,
+          "rampContacts": 3,
+          "adjacentDominoContacts": 9,
+          "finalMarblePosition": {
+            "x": 7.873659133911133,
+            "y": 0.3099192678928375,
+            "z": 0.4047262668609619
+          }
+        },
+        {
+          "run": 5,
+          "goalTick": 593,
+          "rampContacts": 3,
+          "adjacentDominoContacts": 9,
+          "finalMarblePosition": {
+            "x": 7.873659133911133,
+            "y": 0.3099192678928375,
+            "z": 0.4047262668609619
+          }
+        }
+      ],
+      "successes": 5,
+      "goalTickSpread": 0,
+      "dwellTicks": 45,
+      "pass": true
+    }
+  }
+}
