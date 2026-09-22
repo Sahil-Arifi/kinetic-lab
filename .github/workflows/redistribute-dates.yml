@@ -1,0 +1,47 @@
+name: Redistribute approved main commit dates
+
+on:
+  push:
+    branches: [maintenance/date-rewrite-20260922]
+    paths: [.github/workflows/redistribute-dates.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: approved-date-rewrite-20260922
+  cancel-in-progress: false
+
+jobs:
+  rewrite:
+    if: github.repository_owner == 'Sahil-Arifi'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Fetch target history without running project code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          fetch-depth: 0
+          path: target
+          persist-credentials: true
+      - name: Fetch exact reviewed rewrite utility
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Sahil-Arifi/kinetic-lab
+          ref: a8c79fa9889af8dad560b6202e9555329824a53e
+          fetch-depth: 1
+          path: date-tool
+          persist-credentials: false
+      - name: Verify backups, rewrite dates, guarded push, and verify invariants
+        working-directory: target
+        shell: bash
+        run: python3 "$GITHUB_WORKSPACE/date-tool/.github/scripts/redistribute-dates.py"
+      - name: Preserve verification and original-to-new mapping
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: commit-date-rewrite-audit
+          path: ${{ runner.temp }}/date-rewrite-audit/
+          retention-days: 30
+          if-no-files-found: warn
