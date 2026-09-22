@@ -1,0 +1,193 @@
+name: Capture workshop media
+
+on:
+  push:
+    branches: [portfolio/workshop-media]
+    paths: [.github/workflows/capture-workshop.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: d366507106754f99789fcae923e61199321ac0df
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Preserve source and revision evidence
+        shell: bash
+        run: |
+          mkdir -p portfolio-media
+          git archive --format=tar.gz HEAD > portfolio-media/source-snapshot.tar.gz
+          git log --format=fuller HEAD > portfolio-media/commit-history.txt
+          git ls-files > portfolio-media/tracked-files.txt
+          git rev-parse HEAD > portfolio-media/source-sha.txt
+      - name: Record actual workshop interactions
+        shell: bash
+        run: |
+          cat > capture-workshop.mjs <<'JS'
+          import { chromium, expect } from '@playwright/test';
+          import { spawn, execFileSync } from 'node:child_process';
+          import { mkdir, writeFile } from 'node:fs/promises';
+          import { resolve } from 'node:path';
+
+          const output = resolve('portfolio-media');
+          await mkdir(output, { recursive: true });
+          const sourceSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+          const proof = {
+            sourceSha,
+            capturedAt: new Date().toISOString(),
+            method: 'Real production build; Chromium with software WebGL; scripted standard UI interactions; no simulation overrides',
+            editsToApplication: false,
+            captures: [],
+            errors: []
+          };
+          const server = spawn('pnpm', ['preview', '--port', '4173', '--strictPort'], { stdio: 'inherit' });
+          let browser;
+          const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+          const button = (p, name) => p.getByRole('button', { name, exact: true });
+          async function ready(page) {
+            await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+            await expect(button(page, 'Play')).toBeEnabled({ timeout: 20000 });
+            await expect(page.getByTestId('body-anchor-marble')).toBeAttached();
+            await expect(page.getByTestId('workshop-canvas').locator('canvas')).toBeVisible();
+            await page.evaluate(() => document.fonts.ready);
+            await wait(600);
+          }
+          async function marblePoint(page) {
+            const box = await page.getByTestId('body-anchor-marble').boundingBox();
+            if (!box) throw new Error('Marble projection unavailable');
+            return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+          }
+          function observe(page) {
+            page.on('pageerror', (e) => proof.errors.push(e.message));
+            page.on('console', (m) => { if (m.type() === 'error') proof.errors.push(m.text()); });
+          }
+          try {
+            let served = false;
+            for (let i = 0; i < 120; i++) {
+              try { const r = await fetch('http://127.0.0.1:4173/'); if (r.ok) { served = true; break; } } catch {}
+              await wait(250);
+            }
+            if (!served) throw new Error('Preview did not start');
+            browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+
+            const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1, recordVideo: { dir: resolve(output, 'raw'), size: { width: 1440, height: 1000 } } });
+            const page = await context.newPage();
+            observe(page);
+            const natural = { file: 'marble-run.webm', events: [] };
+            const t0 = Date.now();
+            const mark = (name) => natural.events.push({ name, elapsedMs: Date.now() - t0 });
+            await ready(page);
+            mark('ready');
+            await page.screenshot({ path: resolve(output, 'workshop-desktop.png') });
+            await wait(1000);
+            mark('play');
+            await button(page, 'Play').click();
+            await expect(page.getByText('Experiment complete', { exact: true })).toBeVisible({ timeout: 60000 });
+            mark('goalReached');
+            await button(page, 'Pause').click();
+            await wait(500);
+            await page.screenshot({ path: resolve(output, 'goal-complete.png') });
+            await wait(1800);
+            mark('reset');
+            await button(page, 'Reset scene').click();
+            await expect(page.getByTestId('simulation-tick')).toContainText('00000');
+            await wait(900);
+            await button(page, 'Inspect').click();
+            await wait(700);
+            await page.screenshot({ path: resolve(output, 'workshop-inspect.png') });
+            mark('inspect');
+            await wait(1600);
+            const video = page.video();
+            await context.close();
+            await video.saveAs(resolve(output, natural.file));
+            proof.captures.push(natural);
+
+            const controlContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1, recordVideo: { dir: resolve(output, 'raw'), size: { width: 1440, height: 1000 } } });
+            const controlPage = await controlContext.newPage();
+            observe(controlPage);
+            const controls = { file: 'object-controls.webm', events: [] };
+            const c0 = Date.now();
+            const cmark = (name) => controls.events.push({ name, elapsedMs: Date.now() - c0 });
+            await ready(controlPage);
+            cmark('ready');
+            await controlPage.getByRole('slider', { name: 'Gravity (m/s²)', exact: true }).focus();
+            await controlPage.keyboard.press('End');
+            await expect(controlPage.getByRole('slider', { name: 'Gravity (m/s²)', exact: true })).toHaveValue('0');
+            cmark('zeroGravity');
+            await wait(650);
+            await button(controlPage, 'Play').click();
+            await wait(500);
+            const point = await marblePoint(controlPage);
+            await controlPage.mouse.move(point.x, point.y);
+            await controlPage.mouse.down();
+            await expect(controlPage.getByTestId('workshop-canvas')).toHaveClass(/is-dragging/);
+            cmark('grab');
+            for (let i = 1; i <= 36; i++) {
+              await controlPage.mouse.move(point.x + 130 * i / 36, point.y - 60 * i / 36);
+              await wait(45);
+            }
+            await wait(700);
+            const moved = await marblePoint(controlPage);
+            if (Math.hypot(moved.x - point.x, moved.y - point.y) < 25) throw new Error('Actual body did not move with grab');
+            await controlPage.mouse.up();
+            cmark('release');
+            await wait(800);
+            await button(controlPage, 'Pause').click();
+            await wait(500);
+            await controlPage.screenshot({ path: resolve(output, 'zero-gravity-grab.png') });
+            await button(controlPage, 'Reset scene').click();
+            await wait(800);
+            await button(controlPage, 'Add block').click();
+            const y = controlPage.getByRole('spinbutton', { name: 'Position Y', exact: true });
+            await y.fill('3');
+            await y.press('Tab');
+            cmark('editScene');
+            await wait(1000);
+            await controlPage.screenshot({ path: resolve(output, 'scene-editor.png') });
+            await button(controlPage, 'Undo scene edit').click();
+            await wait(600);
+            await button(controlPage, 'Redo scene edit').click();
+            await wait(800);
+            const controlsVideo = controlPage.video();
+            await controlContext.close();
+            await controlsVideo.saveAs(resolve(output, controls.file));
+            proof.captures.push(controls);
+
+            const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+            const mobile = await mobileContext.newPage();
+            observe(mobile);
+            await ready(mobile);
+            await mobile.screenshot({ path: resolve(output, 'workshop-mobile.png'), fullPage: true });
+            await mobileContext.close();
+            await writeFile(resolve(output, 'capture-proof.json'), JSON.stringify(proof, null, 2));
+            if (proof.errors.length) throw new Error(`Browser errors: ${proof.errors.join('; ')}`);
+          } finally {
+            await writeFile(resolve(output, 'capture-proof.json'), JSON.stringify(proof, null, 2));
+            if (browser) await browser.close();
+            server.kill('SIGTERM');
+          }
+          JS
+          node capture-workshop.mjs
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: kinetic-workshop-media
+          path: portfolio-media/
+          retention-days: 14
