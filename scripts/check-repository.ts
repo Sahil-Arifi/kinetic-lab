@@ -35,6 +35,12 @@ const prohibited = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies }).
   /openai|mediapipe/i.test(name),
 );
 assert.deepEqual(prohibited, [], 'This milestone must not depend on OpenAI or MediaPipe.');
+// Also inspect resolved packages: helper libraries must not reintroduce excluded features.
+const lockfile = readFileSync('pnpm-lock.yaml', 'utf8');
+assert(
+  !/^ {2}['"]?(?:@mediapipe\/[^\s]+|openai@[^\s]+):/m.test(lockfile),
+  'A prohibited transitive package is present in the lockfile.',
+);
 console.log(
   `Repository scan passed: ${files.length} tracked files; no matched credential patterns, prohibited dependency, or credential paths.`,
 );

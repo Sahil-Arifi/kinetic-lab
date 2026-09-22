@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { Html, OrbitControls } from '@react-three/drei';
+import { Html } from '@react-three/drei/web/Html.js';
+import { OrbitControls } from '@react-three/drei/core/OrbitControls.js';
 import { Euler, Group, OrthographicCamera, Plane, Vector3 } from 'three';
 import type { BodyDocument, SceneDocument, Vec3 } from '../engine/scene-schema';
 import type { Transform } from '../engine/protocol';
