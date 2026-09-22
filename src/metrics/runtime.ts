@@ -1,5 +1,14 @@
-export interface MetricBuffer { readonly capacity: number; readonly values: readonly number[] }
-export interface MetricSummary { latest: number; average: number; min: number; max: number; samples: number }
+export interface MetricBuffer {
+  readonly capacity: number;
+  readonly values: readonly number[];
+}
+export interface MetricSummary {
+  latest: number;
+  average: number;
+  min: number;
+  max: number;
+  samples: number;
+}
 
 export function createMetricBuffer(capacity = 120): MetricBuffer {
   if (!Number.isInteger(capacity) || capacity < 1 || capacity > 10_000) {
@@ -18,7 +27,9 @@ export function summarizeMetric(buffer: MetricBuffer): MetricSummary {
   if (buffer.values.length === 0) return { latest: 0, average: 0, min: 0, max: 0, samples: 0 };
   let average = 0;
   // Incremental mean avoids overflowing a sum of otherwise finite measurements.
-  buffer.values.forEach((value, index) => { average += (value - average) / (index + 1); });
+  buffer.values.forEach((value, index) => {
+    average += (value - average) / (index + 1);
+  });
   return {
     latest: buffer.values[buffer.values.length - 1]!,
     average,
@@ -28,8 +39,16 @@ export function summarizeMetric(buffer: MetricBuffer): MetricSummary {
   };
 }
 
-export function frameInterval(previousTimestamp: number | null, currentTimestamp: number): number | null {
-  if (previousTimestamp === null || !Number.isFinite(previousTimestamp) || !Number.isFinite(currentTimestamp)) return null;
+export function frameInterval(
+  previousTimestamp: number | null,
+  currentTimestamp: number,
+): number | null {
+  if (
+    previousTimestamp === null ||
+    !Number.isFinite(previousTimestamp) ||
+    !Number.isFinite(currentTimestamp)
+  )
+    return null;
   const interval = currentTimestamp - previousTimestamp;
   return Number.isFinite(interval) && interval >= 0 ? interval : null;
 }

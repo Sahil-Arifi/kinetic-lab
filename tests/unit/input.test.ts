@@ -20,8 +20,9 @@ describe('pointer coordinates and bounds', () => {
     expect(clampDepth(20)).toBe(5);
     expect(clampDepth(-20)).toBe(-5);
     expect(clampDepth(2)).toBe(2);
-    expect(clampVec3({ x: 9, y: -8, z: 1 }, { x: -2, y: -2, z: -2 }, { x: 2, y: 2, z: 2 }))
-      .toEqual({ x: 2, y: -2, z: 1 });
+    expect(clampVec3({ x: 9, y: -8, z: 1 }, { x: -2, y: -2, z: -2 }, { x: 2, y: 2, z: 2 })).toEqual(
+      { x: 2, y: -2, z: 1 },
+    );
     expect(clampVec3({ x: 9, y: -8, z: 1 }, -2, 2)).toEqual({ x: 2, y: -2, z: 1 });
     expect(() => clampDepth(NaN)).toThrow();
     expect(() => clampDepth(0, 3, 1)).toThrow();
@@ -30,7 +31,11 @@ describe('pointer coordinates and bounds', () => {
   it('bounds 3D handle speed including diagonal motion and zero elapsed time', () => {
     const origin = { x: 0, y: 0, z: 0 };
     const target = { x: 3, y: 4, z: 0 };
-    expect(boundedDragTarget(origin, target, 2, 1)).toEqual({ x: 1.2000000000000002, y: 1.6, z: 0 });
+    expect(boundedDragTarget(origin, target, 2, 1)).toEqual({
+      x: 1.2000000000000002,
+      y: 1.6,
+      z: 0,
+    });
     expect(boundedDragTarget(origin, target, 10, 1)).toEqual(target);
     expect(boundedDragTarget(origin, origin, 0, 0)).toEqual(origin);
     expect(boundedDragTarget(origin, target, 0, 1)).toEqual(origin);
@@ -39,7 +44,14 @@ describe('pointer coordinates and bounds', () => {
     expect(() => boundedDragTarget(origin, target, 1, -1)).toThrow();
     expect(() => boundedDragTarget(origin, { ...target, z: NaN }, 1, 1)).toThrow();
     expect(() => boundedDragTarget(origin, target, Number.MAX_VALUE, 2)).toThrow();
-    expect(() => boundedDragTarget({ ...origin, x: -Number.MAX_VALUE }, { ...target, x: Number.MAX_VALUE }, 1, 1)).toThrow();
+    expect(() =>
+      boundedDragTarget(
+        { ...origin, x: -Number.MAX_VALUE },
+        { ...target, x: Number.MAX_VALUE },
+        1,
+        1,
+      ),
+    ).toThrow();
   });
 });
 
@@ -65,7 +77,9 @@ describe('keyboard commands', () => {
   it('handles playback, cancellation and unrelated keys', () => {
     expect(resolveKeyboardAction({ key: ' ', target: document.body })).toBe('togglePlayback');
     expect(resolveKeyboardAction({ key: ' ', target: null })).toBe('togglePlayback');
-    expect(resolveKeyboardAction({ key: 'Escape', target: document.createElement('input') })).toBe('cancelGrab');
+    expect(resolveKeyboardAction({ key: 'Escape', target: document.createElement('input') })).toBe(
+      'cancelGrab',
+    );
     expect(resolveKeyboardAction({ key: 'a', target: null })).toBeNull();
   });
 
@@ -96,7 +110,8 @@ describe('keyboard commands', () => {
   });
 
   it.each(['defaultPrevented', 'repeat', 'altKey', 'ctrlKey', 'metaKey'] as const)(
-    'ignores %s keyboard events', (flag) => {
+    'ignores %s keyboard events',
+    (flag) => {
       expect(resolveKeyboardAction({ key: ' ', target: null, [flag]: true })).toBeNull();
     },
   );

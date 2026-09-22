@@ -2,7 +2,11 @@ import { z } from 'zod';
 import { finite, idSchema, sceneSchema, vec3Schema } from './scene-schema';
 
 export const PROTOCOL_VERSION = 1 as const;
-const envelope = { protocolVersion: z.literal(PROTOCOL_VERSION), sessionId: z.string().min(1).max(100), sequence: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER) };
+const envelope = {
+  protocolVersion: z.literal(PROTOCOL_VERSION),
+  sessionId: z.string().min(1).max(100),
+  sequence: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
+};
 export const commandPayloadSchema = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('loadScene'), scene: sceneSchema }),
   z.strictObject({ type: z.literal('reset'), scene: sceneSchema }),
@@ -17,8 +21,11 @@ export const commandPayloadSchema = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('applyImpulse'), bodyId: idSchema, impulse: vec3Schema }),
 ]);
 export const envelopeSchema = z.object(envelope);
-const commandVariants = commandPayloadSchema.options.map(option => option.extend(envelope));
-export const commandSchema = z.discriminatedUnion('type', [commandVariants[0]!, ...commandVariants.slice(1)]);
+const commandVariants = commandPayloadSchema.options.map((option) => option.extend(envelope));
+export const commandSchema = z.discriminatedUnion('type', [
+  commandVariants[0]!,
+  ...commandVariants.slice(1),
+]);
 export type CommandPayload = z.infer<typeof commandPayloadSchema>;
 export type WorkerCommand = CommandPayload & z.infer<typeof envelopeSchema>;
 export const transformSchema = z.strictObject({
@@ -32,25 +39,80 @@ export type Transform = z.infer<typeof transformSchema>;
 const tick = z.number().int().nonnegative();
 const responseVariants = [
   z.strictObject({ ...envelope, type: z.literal('ready') }),
-  z.strictObject({ ...envelope, type: z.literal('commandApplied'), command: z.enum(['loadScene','reset','play','pause','step','setGravity','beginGrab','moveGrab','endGrab','cancelGrab','applyImpulse']), tick, playing: z.boolean() }),
-  z.strictObject({ ...envelope, type: z.literal('transforms'), tick, bodies: z.array(transformSchema).max(200) }),
-  z.strictObject({ ...envelope, type: z.literal('collisionEvent'), bodyA: idSchema, bodyB: idSchema, started: z.boolean() }),
-  z.strictObject({ ...envelope, type: z.literal('goalEvent'), goalId: idSchema, bodyId: idSchema, tick }),
-  z.strictObject({ ...envelope, type: z.literal('metrics'), tick, stepDurationMs: finite.nonnegative(), activeBodies: tick, sleepingBodies: tick, droppedTimeSeconds: finite.nonnegative() }),
+  z.strictObject({
+    ...envelope,
+    type: z.literal('commandApplied'),
+    command: z.enum([
+      'loadScene',
+      'reset',
+      'play',
+      'pause',
+      'step',
+      'setGravity',
+      'beginGrab',
+      'moveGrab',
+      'endGrab',
+      'cancelGrab',
+      'applyImpulse',
+    ]),
+    tick,
+    playing: z.boolean(),
+  }),
+  z.strictObject({
+    ...envelope,
+    type: z.literal('transforms'),
+    tick,
+    bodies: z.array(transformSchema).max(200),
+  }),
+  z.strictObject({
+    ...envelope,
+    type: z.literal('collisionEvent'),
+    bodyA: idSchema,
+    bodyB: idSchema,
+    started: z.boolean(),
+  }),
+  z.strictObject({
+    ...envelope,
+    type: z.literal('goalEvent'),
+    goalId: idSchema,
+    bodyId: idSchema,
+    tick,
+  }),
+  z.strictObject({
+    ...envelope,
+    type: z.literal('metrics'),
+    tick,
+    stepDurationMs: finite.nonnegative(),
+    activeBodies: tick,
+    sleepingBodies: tick,
+    droppedTimeSeconds: finite.nonnegative(),
+  }),
   z.strictObject({ ...envelope, type: z.literal('error'), message: z.string().max(500) }),
 ] as const;
 export const responseSchema = z.discriminatedUnion('type', responseVariants);
 export type WorkerResponse = z.infer<typeof responseSchema>;
-export type ResponsePayload = WorkerResponse extends infer T ? T extends WorkerResponse ? Omit<T, keyof z.infer<typeof envelopeSchema>> : never : never;
+export type ResponsePayload = WorkerResponse extends infer T
+  ? T extends WorkerResponse
+    ? Omit<T, keyof z.infer<typeof envelopeSchema>>
+    : never
+  : never;
 
 /** A fresh session invalidates every queued response from the old world. */
 export class ResponseGate {
   private lastSequence = 0;
   constructor(public sessionId: string) {}
-  replace(sessionId: string): void { this.sessionId = sessionId; this.lastSequence = 0; }
+  replace(sessionId: string): void {
+    this.sessionId = sessionId;
+    this.lastSequence = 0;
+  }
   accept(input: unknown): WorkerResponse | undefined {
     const parsed = responseSchema.safeParse(input);
-    if (!parsed.success || parsed.data.sessionId !== this.sessionId || parsed.data.sequence <= this.lastSequence) return undefined;
+    if (
+      !parsed.success ||
+      parsed.data.sessionId !== this.sessionId ||
+      parsed.data.sequence <= this.lastSequence
+    )
+      return undefined;
     this.lastSequence = parsed.data.sequence;
     return parsed.data;
   }

@@ -1,4 +1,11 @@
-import { PROTOCOL_VERSION, ResponseGate, commandPayloadSchema, type CommandPayload, type WorkerCommand, type WorkerResponse } from './protocol';
+import {
+  PROTOCOL_VERSION,
+  ResponseGate,
+  commandPayloadSchema,
+  type CommandPayload,
+  type WorkerCommand,
+  type WorkerResponse,
+} from './protocol';
 import { parseScene, type SceneDocument } from './scene-schema';
 
 export interface WorkerPort {
@@ -17,8 +24,14 @@ export class PhysicsClient {
 
   constructor(
     private readonly receive: (response: WorkerResponse) => void,
-    private readonly createWorker: () => WorkerPort = () => new Worker(new URL('../workers/physics.worker.ts', import.meta.url), { type: 'module', name: 'kinetic-physics' }),
-  ) { this.worker = this.attach(); }
+    private readonly createWorker: () => WorkerPort = () =>
+      new Worker(new URL('../workers/physics.worker.ts', import.meta.url), {
+        type: 'module',
+        name: 'kinetic-physics',
+      }),
+  ) {
+    this.worker = this.attach();
+  }
 
   private attach(): WorkerPort {
     const worker = this.createWorker();
@@ -31,7 +44,13 @@ export class PhysicsClient {
     worker.onerror = (event) => {
       if (this.disposed || generation !== this.generation) return;
       // Native worker failures are local diagnostics, not accepted protocol responses.
-      this.receive({ type: 'error', protocolVersion: PROTOCOL_VERSION, sessionId: this.gate.sessionId, sequence: 1, message: event.message || 'The physics worker stopped. Restart it to continue.' });
+      this.receive({
+        type: 'error',
+        protocolVersion: PROTOCOL_VERSION,
+        sessionId: this.gate.sessionId,
+        sequence: 1,
+        message: event.message || 'The physics worker stopped. Restart it to continue.',
+      });
     };
     return worker;
   }
@@ -39,7 +58,12 @@ export class PhysicsClient {
   send(payload: CommandPayload): void {
     if (this.disposed) return;
     const valid = commandPayloadSchema.parse(payload);
-    this.worker.postMessage({ ...valid, protocolVersion: PROTOCOL_VERSION, sessionId: this.gate.sessionId, sequence: ++this.sequence });
+    this.worker.postMessage({
+      ...valid,
+      protocolVersion: PROTOCOL_VERSION,
+      sessionId: this.gate.sessionId,
+      sequence: ++this.sequence,
+    });
   }
 
   private replace(scene: SceneDocument, type: 'loadScene' | 'reset'): void {
@@ -49,8 +73,12 @@ export class PhysicsClient {
     this.send({ type, scene: validated });
   }
 
-  load(scene: SceneDocument): void { this.replace(scene, 'loadScene'); }
-  reset(scene: SceneDocument): void { this.replace(scene, 'reset'); }
+  load(scene: SceneDocument): void {
+    this.replace(scene, 'loadScene');
+  }
+  reset(scene: SceneDocument): void {
+    this.replace(scene, 'reset');
+  }
   restart(scene: SceneDocument): void {
     const validated = parseScene(scene);
     this.worker.terminate();
@@ -63,6 +91,8 @@ export class PhysicsClient {
     if (this.disposed) return;
     this.disposed = true;
     // Termination releases the entire worker/WASM heap, including temporary constraints.
-    this.worker.onmessage = null; this.worker.onerror = null; this.worker.terminate();
+    this.worker.onmessage = null;
+    this.worker.onerror = null;
+    this.worker.terminate();
   }
 }

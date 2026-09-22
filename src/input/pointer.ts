@@ -20,11 +20,21 @@ export function clampVec3(point: Vec3, min: Vec3 | number, max: Vec3 | number): 
   };
 }
 
-export interface CanvasBounds { left: number; top: number; width: number; height: number }
+export interface CanvasBounds {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
-export function pointerToNdc(clientX: number, clientY: number, bounds: CanvasBounds): { x: number; y: number } {
+export function pointerToNdc(
+  clientX: number,
+  clientY: number,
+  bounds: CanvasBounds,
+): { x: number; y: number } {
   [clientX, clientY, bounds.left, bounds.top, bounds.width, bounds.height].forEach(finite);
-  if (bounds.width <= 0 || bounds.height <= 0) throw new RangeError('Canvas must have positive dimensions.');
+  if (bounds.width <= 0 || bounds.height <= 0)
+    throw new RangeError('Canvas must have positive dimensions.');
   return {
     x: clampDepth(((clientX - bounds.left) / bounds.width) * 2 - 1, -1, 1),
     y: clampDepth(1 - ((clientY - bounds.top) / bounds.height) * 2, -1, 1),
@@ -32,14 +42,34 @@ export function pointerToNdc(clientX: number, clientY: number, bounds: CanvasBou
 }
 
 /** Limits total 3D travel distance, including diagonals. Worker applies its own bound too. */
-export function boundedDragTarget(previous: Vec3, target: Vec3, maxSpeed: number, deltaSeconds: number): Vec3 {
-  [previous.x, previous.y, previous.z, target.x, target.y, target.z, maxSpeed, deltaSeconds].forEach(finite);
-  if (maxSpeed < 0 || deltaSeconds < 0) throw new RangeError('Drag speed and elapsed time cannot be negative.');
+export function boundedDragTarget(
+  previous: Vec3,
+  target: Vec3,
+  maxSpeed: number,
+  deltaSeconds: number,
+): Vec3 {
+  [
+    previous.x,
+    previous.y,
+    previous.z,
+    target.x,
+    target.y,
+    target.z,
+    maxSpeed,
+    deltaSeconds,
+  ].forEach(finite);
+  if (maxSpeed < 0 || deltaSeconds < 0)
+    throw new RangeError('Drag speed and elapsed time cannot be negative.');
   const delta = { x: target.x - previous.x, y: target.y - previous.y, z: target.z - previous.z };
   const distance = Math.hypot(delta.x, delta.y, delta.z);
   const maximum = maxSpeed * deltaSeconds;
-  if (!Number.isFinite(distance) || !Number.isFinite(maximum)) throw new RangeError('Drag movement exceeds numeric limits.');
+  if (!Number.isFinite(distance) || !Number.isFinite(maximum))
+    throw new RangeError('Drag movement exceeds numeric limits.');
   if (distance === 0 || distance <= maximum) return { ...target };
   const scale = maximum / distance;
-  return { x: previous.x + delta.x * scale, y: previous.y + delta.y * scale, z: previous.z + delta.z * scale };
+  return {
+    x: previous.x + delta.x * scale,
+    y: previous.y + delta.y * scale,
+    z: previous.z + delta.z * scale,
+  };
 }

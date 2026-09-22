@@ -8,15 +8,24 @@ import type { Transform } from './protocol';
 
 export const PHYSICS_DT = FIXED_DT;
 export type { Transform } from './protocol';
-export interface CollisionEvent { bodyA: string; bodyB: string; started: boolean }
+export interface CollisionEvent {
+  bodyA: string;
+  bodyB: string;
+  started: boolean;
+}
 
 let initialization: Promise<void> | undefined;
-export function initPhysics(): Promise<void> { return initialization ??= RAPIER.init(); }
+export function initPhysics(): Promise<void> {
+  return (initialization ??= RAPIER.init());
+}
 
 export function eulerQuaternion(rotation: Vec3): Transform['rotation'] {
-  const cx = Math.cos(rotation.x / 2), sx = Math.sin(rotation.x / 2);
-  const cy = Math.cos(rotation.y / 2), sy = Math.sin(rotation.y / 2);
-  const cz = Math.cos(rotation.z / 2), sz = Math.sin(rotation.z / 2);
+  const cx = Math.cos(rotation.x / 2),
+    sx = Math.sin(rotation.x / 2);
+  const cy = Math.cos(rotation.y / 2),
+    sy = Math.sin(rotation.y / 2);
+  const cz = Math.cos(rotation.z / 2),
+    sz = Math.sin(rotation.z / 2);
   return {
     x: sx * cy * cz + cx * sy * sz,
     y: cx * sy * cz - sx * cy * sz,
@@ -58,15 +67,19 @@ export class PhysicsWorld {
 
   private addBody(document: BodyDocument): void {
     const p = document.position;
-    const descriptor = document.bodyMode === 'dynamic'
-      ? RAPIER.RigidBodyDesc.dynamic() : RAPIER.RigidBodyDesc.fixed();
+    const descriptor =
+      document.bodyMode === 'dynamic'
+        ? RAPIER.RigidBodyDesc.dynamic()
+        : RAPIER.RigidBodyDesc.fixed();
     descriptor.setTranslation(p.x, p.y, p.z).setRotation(eulerQuaternion(document.rotation));
     descriptor.setCcdEnabled(document.bodyMode === 'dynamic');
     const body = this.world.createRigidBody(descriptor);
     this.bodies.set(document.id, body);
     const colliderList: RAPIER.Collider[] = [];
     const add = (desc: RAPIER.ColliderDesc, sensor = false): RAPIER.Collider => {
-      desc.setFriction(document.friction).setRestitution(document.restitution)
+      desc
+        .setFriction(document.friction)
+        .setRestitution(document.restitution)
         .setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS);
       if (sensor) desc.setSensor(true).setDensity(0);
       else desc.setMass(document.mass);
@@ -80,19 +93,44 @@ export class PhysicsWorld {
       add(RAPIER.ColliderDesc.ball(d.x / 2));
     } else if (document.type === 'targetCup') {
       const wall = Math.min(CUP_WALL_THICKNESS, d.x / 5, d.y / 5, d.z / 5);
-      add(RAPIER.ColliderDesc.cuboid(d.x / 2, wall / 2, d.z / 2)
-        .setTranslation(0, -d.y / 2 + wall / 2, 0));
+      add(
+        RAPIER.ColliderDesc.cuboid(d.x / 2, wall / 2, d.z / 2).setTranslation(
+          0,
+          -d.y / 2 + wall / 2,
+          0,
+        ),
+      );
       for (const side of [-1, 1]) {
-        add(RAPIER.ColliderDesc.cuboid(d.x / 2, d.y / 2, wall / 2)
-          .setTranslation(0, 0, side * (d.z - wall) / 2));
+        add(
+          RAPIER.ColliderDesc.cuboid(d.x / 2, d.y / 2, wall / 2).setTranslation(
+            0,
+            0,
+            (side * (d.z - wall)) / 2,
+          ),
+        );
       }
-      add(RAPIER.ColliderDesc.cuboid(wall / 2, d.y / 2, (d.z - 2 * wall) / 2)
-        .setTranslation((d.x - wall) / 2, 0, 0));
-      add(RAPIER.ColliderDesc.cuboid(wall / 2, d.y * 0.1, (d.z - 2 * wall) / 2)
-        .setTranslation(-(d.x - wall) / 2, -d.y * 0.4, 0));
-      const sensor = add(RAPIER.ColliderDesc.cuboid(
-        (d.x - 2 * wall) / 2, (d.y - 2 * wall) / 2, (d.z - 2 * wall) / 2,
-      ).setTranslation(0, wall / 4, 0), true);
+      add(
+        RAPIER.ColliderDesc.cuboid(wall / 2, d.y / 2, (d.z - 2 * wall) / 2).setTranslation(
+          (d.x - wall) / 2,
+          0,
+          0,
+        ),
+      );
+      add(
+        RAPIER.ColliderDesc.cuboid(wall / 2, d.y * 0.1, (d.z - 2 * wall) / 2).setTranslation(
+          -(d.x - wall) / 2,
+          -d.y * 0.4,
+          0,
+        ),
+      );
+      const sensor = add(
+        RAPIER.ColliderDesc.cuboid(
+          (d.x - 2 * wall) / 2,
+          (d.y - 2 * wall) / 2,
+          (d.z - 2 * wall) / 2,
+        ).setTranslation(0, wall / 4, 0),
+        true,
+      );
       this.sensors.set(document.id, sensor);
     } else {
       add(RAPIER.ColliderDesc.cuboid(d.x / 2, d.y / 2, d.z / 2));
@@ -120,12 +158,16 @@ export class PhysicsWorld {
 
   snapshot(): Transform[] {
     return [...this.bodies].map(([id, body]) => ({
-      id, position: { ...body.translation() }, rotation: { ...body.rotation() }, sleeping: body.isSleeping(),
+      id,
+      position: { ...body.translation() },
+      rotation: { ...body.rotation() },
+      sleeping: body.isSleeping(),
     }));
   }
 
   metrics(): { activeBodies: number; sleepingBodies: number } {
-    let activeBodies = 0, sleepingBodies = 0;
+    let activeBodies = 0,
+      sleepingBodies = 0;
     for (const body of this.bodies.values()) {
       if (!body.isDynamic()) continue;
       if (body.isSleeping()) sleepingBodies += 1;
@@ -136,7 +178,9 @@ export class PhysicsWorld {
 
   setGravity(gravity: Vec3): void {
     this.world.gravity = { ...gravity };
-    this.bodies.forEach((body) => { if (body.isDynamic()) body.wakeUp(); });
+    this.bodies.forEach((body) => {
+      if (body.isDynamic()) body.wakeUp();
+    });
   }
 
   beginGrab(id: string, target: Vec3): boolean {
@@ -144,8 +188,12 @@ export class PhysicsWorld {
     return body !== undefined && this.grab.begin(body, target);
   }
 
-  moveGrab(target: Vec3): void { this.grab.move(target); }
-  endGrab(): void { this.grab.end(); }
+  moveGrab(target: Vec3): void {
+    this.grab.move(target);
+  }
+  endGrab(): void {
+    this.grab.end();
+  }
 
   applyImpulse(id: string, impulse: Vec3): boolean {
     const body = this.bodies.get(id);

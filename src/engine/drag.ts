@@ -26,7 +26,9 @@ export class GrabConstraint {
 
   constructor(private readonly world: RAPIER.World) {}
 
-  get active(): boolean { return this.handle !== undefined; }
+  get active(): boolean {
+    return this.handle !== undefined;
+  }
 
   begin(body: RAPIER.RigidBody, target: Vec3): boolean {
     this.end();
@@ -37,15 +39,20 @@ export class GrabConstraint {
     );
     const mass = body.mass();
     const spring = RAPIER.JointData.spring(
-      0, config.grabStiffness * mass, config.grabDamping * mass,
-      { x: 0, y: 0, z: 0 }, localPoint(body, target),
+      0,
+      config.grabStiffness * mass,
+      config.grabDamping * mass,
+      { x: 0, y: 0, z: 0 },
+      localPoint(body, target),
     );
     this.joint = this.world.createImpulseJoint(spring, this.handle, body, true);
     body.wakeUp();
     return true;
   }
 
-  move(target: Vec3): void { if (this.handle) this.target = { ...target }; }
+  move(target: Vec3): void {
+    if (this.handle) this.target = { ...target };
+  }
 
   step(dt: number): void {
     if (!this.handle || !this.target) return;
@@ -54,7 +61,7 @@ export class GrabConstraint {
     const dy = this.target.y - current.y;
     const dz = this.target.z - current.z;
     const distance = Math.hypot(dx, dy, dz);
-    const fraction = distance > 0 ? Math.min(1, MAX_HANDLE_SPEED * dt / distance) : 0;
+    const fraction = distance > 0 ? Math.min(1, (MAX_HANDLE_SPEED * dt) / distance) : 0;
     this.handle.setNextKinematicTranslation({
       x: current.x + dx * fraction,
       y: current.y + dy * fraction,
