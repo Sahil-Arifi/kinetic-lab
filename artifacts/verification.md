@@ -9,17 +9,19 @@ Executed on 21 September 2026 (America/Los_Angeles), Windows x64, Node **24.19.0
 | `pnpm typecheck`                 | Exit 0; strict TypeScript check                                                                                                   |
 | `pnpm test`                      | 98 passed in 10 files: 79 unit/component/lifecycle, 19 real-Rapier integration                                                    |
 | `pnpm test:coverage`             | 98 passed; branches **97.92% (283/289)**; statements **99.43% (524/527)**; functions **100% (101/101)**; lines **100% (468/468)** |
-| `pnpm build`                     | Exit 0; 683 modules transformed; production worker and app emitted                                                                |
-| `pnpm test:e2e`                  | **14/14 passed**, 41.2 s, Chromium                                                                                                |
-| `pnpm test:a11y`                 | **2/2 passed**, 8.8 s; zero axe violations in tested states                                                                       |
+| `pnpm build`                     | Exit 0; 430 modules transformed; production worker and app emitted                                                                |
+| `pnpm test:e2e`                  | **14/14 passed**, 45.9 s, Chromium                                                                                                |
+| `pnpm test:a11y`                 | **2/2 passed**, 9.8 s; zero axe violations in tested states                                                                       |
 | `pnpm validate:physics`          | All five experiments pass; Marble Run **5/5**, goal tick **593** each time                                                        |
-| `pnpm verify:repository`         | No matched credential patterns, credential paths or prohibited direct dependencies                                                |
+| `pnpm verify:repository`         | 74 tracked files; no matched credential patterns, credential paths or prohibited direct/resolved transitive dependencies          |
 
 The coverage gate enforces at least 85% branches, statements, functions and lines **for each included file**. All files in `src/engine`, `src/input`, `src/editor`, `src/metrics` and `src/scenes` are included. Engine branch coverage is 96.57%; scene schema, protocol, input adapters, editor and metrics each have 100% branch coverage. Component/rendering and worker bootstrap behavior are additionally exercised through DOM tests and the actual built browser application.
 
 ## Reproducibility
 
-A separate clone at `839412d578b1eb4b6e59002bea7520c43db85ce4` had **no node_modules directory** before `pnpm install --frozen-lockfile`. Installation added 306 packages from the package store in 10.1 s; the production build then passed and `git status --porcelain` was empty. The final documentation/test-driver changes do not alter the dependency lockfile or production application source tested by this clean installation.
+A clean export of all tracked working files into a new directory had **no node_modules directory** before `pnpm install --frozen-lockfile`. With Node 24.19.0 and pnpm 11.19.0, installation added 305 packages from the package store in 4.3 s; the production build then passed with 430 transformed modules. The final lockfile SHA-256 is `10c9fd45f855bad608cf5ce2e9fb9ac6c8bad0c6f67c74ef539268f422295271`.
+
+The dependency audit removed Drei's unused transitive MediaPipe package through a pnpm override and switched to direct imports of the two required helpers. The repository scan checks resolved lockfile packages as well as direct dependencies. The final full local suite and browser checks were repeated after this correction; no MediaPipe or OpenAI package is resolved.
 
 Production output at validation: application JavaScript 1,235.31 kB (341.18 kB gzip), worker JavaScript including embedded Rapier WASM 2,956.71 kB, CSS 22.33 kB (5.73 kB gzip), Latin font files 59.22 kB combined. Vite reports its standard >500 kB chunk advisory. This is a recorded bundle limitation; it is not a startup or runtime performance result. Both font licenses ship under `dist/licenses`.
 

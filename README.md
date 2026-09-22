@@ -19,6 +19,8 @@ pnpm dev
 
 Open the localhost URL printed by Vite. The application starts paused. Fonts and WASM are bundled locally; there is no runtime dependency on an external service.
 
+Only Drei's HTML-label and orbit-control helpers are imported directly. A pinned pnpm override removes Drei's unused transitive MediaPipe package; the repository check rejects any resolved MediaPipe or OpenAI package in the lockfile. Adding hand tracking later requires an explicit dependency and implementation review.
+
 | Control                                           | Behavior                                                                                                |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | Play / Pause, or Space outside editable fields    | Start or stop the simulation                                                                            |
