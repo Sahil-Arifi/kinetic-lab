@@ -1,10 +1,27 @@
 # Kinetic Lab
 
-**An interactive physics workshop: build a scene, set it in motion, and investigate what happens.**
+[![Validate Kinetic Lab](https://github.com/Sahil-Arifi/kinetic-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Sahil-Arifi/kinetic-lab/actions/workflows/ci.yml)
 
-Kinetic Lab runs an actual Rapier simulation in a dedicated browser worker. Its first experiment sends a ceramic marble down three ramps, through ten dominoes, and into a sensor-equipped finish cup. Mouse, single-touch and keyboard controls share one validated authored scene.
+**Build a 3D scene, set it in motion, and investigate the physics.**
+
+Kinetic Lab is a browser physics workshop built with TypeScript, React Three Fiber and Rapier. Edit a marble run, change gravity and material properties, then play, pause or advance the simulation one tick at a time.
+
+**[Open the demo](https://kinetic-lab.netlify.app/)** · [Run locally](#run-locally) · [Architecture](docs/architecture.md) · [Validation evidence](artifacts/verification.md)
 
 ![Kinetic Lab desktop workbench](artifacts/screenshots/workbench-1440.png)
+
+## Engineering highlights
+
+- **Physics in a dedicated worker.** Rapier runs at a fixed 120 Hz timestep. Typed commands, session IDs and sequence checks isolate simulation state from React and reject stale worker responses.
+- **An editable scene document.** Add, duplicate, move and inspect objects; undo or redo edits; import and export validated JSON. Running grabs use damped spring constraints.
+- **Multiple ways to interact.** Mouse, touch and keyboard controls share the same authored scene, with a DOM object list and numeric inspector alongside the 3D canvas.
+- **Measured behavior.** Real physics integration tests check free fall, momentum, reset behavior and repeated marble-run completion. Windows and Ubuntu CI also cover linting, TypeScript, per-file coverage and builds; Ubuntu runs browser and accessibility checks.
+
+**Stack:** TypeScript · React · Three.js / React Three Fiber · Rapier · Zod · Vite · Vitest · Playwright
+
+The committed [verification record](artifacts/verification.md) reports 98 unit/component/integration tests, 14 browser tests and two accessibility tests passing. The authored marble run completed in all five recorded trials at tick 593. These results describe the documented fixtures and environments, not universal physics accuracy or cross-platform determinism. The CI badge links to the current workflow status.
+
+**Current scope:** a physics workshop with one starter experiment and primitive scene editing. Hand tracking is planned and is not implemented. See [current limitations](#current-limitations).
 
 ## Run locally
 
@@ -17,9 +34,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open the localhost URL printed by Vite. The application starts paused. Fonts and WASM are bundled locally; there is no runtime dependency on an external service.
-
-Only Drei's HTML-label and orbit-control helpers are imported directly. A pinned pnpm override removes Drei's unused transitive MediaPipe package; the repository check rejects any resolved MediaPipe or OpenAI package in the lockfile. Adding hand tracking later requires an explicit dependency and implementation review.
+Open the localhost URL printed by Vite, or [use the hosted demo](https://kinetic-lab.netlify.app/). The application starts paused. Fonts and WASM are bundled locally; there is no runtime dependency on an external service.
 
 | Control                                           | Behavior                                                                                                |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -44,9 +59,11 @@ Kinetic Lab separates authored state from simulation state. A typed, session-sco
 
 ## Architecture and worker ownership
 
+Only Drei's HTML-label and orbit-control helpers are imported directly. A pinned pnpm override removes Drei's unused transitive MediaPipe package; the repository check rejects any resolved MediaPipe or OpenAI package in the lockfile. Adding hand tracking later requires an explicit dependency and implementation review.
+
 ```mermaid
-flowchart LR
-  Inputs[Mouse / touch / keyboard] --> UI[React controls and authored scene]
+flowchart TD
+  Inputs[Mouse / touch / keyboard] --> UI[React and authored scene]
   UI --> Schema[Strict Zod validation]
   Schema --> Client[Session and sequence gate]
   Client -->|Typed commands| Worker[Dedicated physics worker]
