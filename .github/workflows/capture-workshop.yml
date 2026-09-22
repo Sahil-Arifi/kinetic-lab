@@ -66,7 +66,7 @@ jobs:
             await expect(button(page, 'Play')).toBeEnabled({ timeout: 20000 });
             await expect(page.getByTestId('body-anchor-marble')).toBeAttached();
             await expect(page.getByTestId('workshop-canvas').locator('canvas')).toBeVisible();
-            await page.evaluate(() => document.fonts.ready);
+            await page.evaluate(() => document.fonts.ready.then(() => undefined));
             await wait(600);
           }
           async function marblePoint(page) {
@@ -91,6 +91,7 @@ jobs:
             const page = await context.newPage();
             observe(page);
             const natural = { file: 'marble-run.webm', events: [] };
+            proof.captures.push(natural);
             const t0 = Date.now();
             const mark = (name) => natural.events.push({ name, elapsedMs: Date.now() - t0 });
             await ready(page);
@@ -109,7 +110,7 @@ jobs:
             await button(page, 'Reset scene').click();
             await expect(page.getByTestId('simulation-tick')).toContainText('00000');
             await wait(900);
-            await button(page, 'Inspect').click();
+            await button(page, 'Inspect performance').click();
             await wait(700);
             await page.screenshot({ path: resolve(output, 'workshop-inspect.png') });
             mark('inspect');
@@ -117,12 +118,12 @@ jobs:
             const video = page.video();
             await context.close();
             await video.saveAs(resolve(output, natural.file));
-            proof.captures.push(natural);
 
             const controlContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1, recordVideo: { dir: resolve(output, 'raw'), size: { width: 1440, height: 1000 } } });
             const controlPage = await controlContext.newPage();
             observe(controlPage);
             const controls = { file: 'object-controls.webm', events: [] };
+            proof.captures.push(controls);
             const c0 = Date.now();
             const cmark = (name) => controls.events.push({ name, elapsedMs: Date.now() - c0 });
             await ready(controlPage);
@@ -168,7 +169,6 @@ jobs:
             const controlsVideo = controlPage.video();
             await controlContext.close();
             await controlsVideo.saveAs(resolve(output, controls.file));
-            proof.captures.push(controls);
 
             const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
             const mobile = await mobileContext.newPage();
