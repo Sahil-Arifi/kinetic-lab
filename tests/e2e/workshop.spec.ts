@@ -261,10 +261,7 @@ test.describe('single-touch mobile interaction', () => {
     await session.detach();
   });
 
-  test('single touch orbits the camera and visible zoom buttons need no multitouch', async ({
-    page,
-    context,
-  }) => {
+  test('one-finger camera orbit needs no multitouch', async ({ page, context }) => {
     await loadWorkshop(page);
     await page.getByRole('button', { name: 'Orbit view', exact: true }).tap();
     const before = await marblePoint(page);
@@ -280,7 +277,12 @@ test.describe('single-touch mobile interaction', () => {
     await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await session.detach();
     // Complete the raw CDP gesture before starting a separate native button tap.
-    await page.evaluate(() => new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
+    await page.evaluate(
+      () =>
+        new Promise<void>((done) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => done())),
+        ),
+    );
     await expect
       .poll(async () => {
         const actual = await marblePoint(page);
@@ -288,19 +290,26 @@ test.describe('single-touch mobile interaction', () => {
       })
       .toBeGreaterThan(5);
     await expect(page.getByTestId('workshop-canvas')).not.toHaveClass(/is-dragging/);
-    const orbited = await marblePoint(page);
+  });
+
+  // Keep native tap and raw CDP drag sequences on separate pages: Chromium can
+  // suppress a compatibility click when those two automation drivers hand off.
+  test('visible camera zoom buttons work with single taps and no multitouch', async ({ page }) => {
+    await loadWorkshop(page);
+    await settledTick(page);
+    const before = await marblePoint(page);
     await page.getByRole('button', { name: 'Zoom in', exact: true }).tap();
     await expect
       .poll(async () => {
         const actual = await marblePoint(page);
-        return Math.hypot(actual.x - orbited.x, actual.y - orbited.y);
+        return Math.hypot(actual.x - before.x, actual.y - before.y);
       })
       .toBeGreaterThan(2);
     await page.getByRole('button', { name: 'Zoom out', exact: true }).tap();
     await expect
       .poll(async () => {
         const actual = await marblePoint(page);
-        return Math.hypot(actual.x - orbited.x, actual.y - orbited.y);
+        return Math.hypot(actual.x - before.x, actual.y - before.y);
       })
       .toBeLessThan(2);
   });

@@ -185,6 +185,8 @@ describe('real Rapier world', () => {
       expect(marble.x).toBeGreaterThan(6.57);
       expect(marble.x).toBeLessThan(8.13);
       expect(marble.y).toBeLessThan(0.6);
+      expect(marble.y).toBeGreaterThan(0.07);
+      expect(Math.abs(marble.z)).toBeLessThan(0.78);
     }
     expect(new Set(completionTicks).size).toBe(1);
   });
