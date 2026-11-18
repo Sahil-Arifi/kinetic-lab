@@ -45,6 +45,12 @@ While running, pointer input selects a body and intersects a camera-facing plane
 
 Depth is a separate visible control, also adjustable with the wheel or arrow keys during a drag. Touch offers explicit Object and Orbit modes and requires no multitouch. Paused drags edit authored positions; numeric inspector controls provide equivalent keyboard access. Escape cancels an in-progress drag. Scene replacement and deletion reconstruct the world, removing any grab resources.
 
+## Hand input integration seam
+
+Pointer dragging now reuses shared `createDragPlane`, `updateDragFromRay`, and `updateDragDepth` functions. `rayFromNormalizedCursor` turns a normalized, top-left-origin hand cursor into the same Three.js ray coordinates. Only the landmark adapter handles mirroring.
+
+The pinch gesture controller and ray mapping are unit tested but remain disconnected from a camera, model, and hand interaction UI. No MediaPipe dependency, permissions, analytics, or camera processing are included in this slice. A future hand adapter must use the existing grab callbacks rather than another physics implementation.
+
 ## Metrics and boundaries
 
 Inspect reports mean render frame interval, draw calls, the most recent physics step duration, awake/sleeping dynamic body counts, tick count and dropped simulation seconds. These are live diagnostics, not a benchmark or a promise of throughput. WebGL renderer work and worker integration cost are different measurements.

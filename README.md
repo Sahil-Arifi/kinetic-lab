@@ -21,7 +21,7 @@ Kinetic Lab is a browser physics workshop built with TypeScript, React Three Fib
 
 The committed [verification record](artifacts/verification.md) reports 98 unit/component/integration tests, 14 browser tests and two accessibility tests passing. The authored marble run completed in all five recorded trials at tick 593. These results describe the documented fixtures and environments, not universal physics accuracy or cross-platform determinism. The CI badge links to the current workflow status.
 
-**Current scope:** a physics workshop with one starter experiment and primitive scene editing. Hand tracking is planned and is not implemented. See [current limitations](#current-limitations).
+**Current scope:** a physics workshop with one starter experiment and primitive scene editing. Hand landmark validation, pinch gesture handling and shared ray/drag-plane mapping are implemented and tested, but are not connected to a webcam, inference worker or scene hand controls. See [current limitations](#current-limitations).
 
 ## Run locally
 

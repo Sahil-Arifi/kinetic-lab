@@ -2,10 +2,11 @@ import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from '
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { Html } from '@react-three/drei/web/Html.js';
 import { OrbitControls } from '@react-three/drei/core/OrbitControls.js';
-import { Euler, Group, OrthographicCamera, Plane, Vector3 } from 'three';
+import { Euler, Group, OrthographicCamera, Vector3 } from 'three';
 import type { BodyDocument, SceneDocument, Vec3 } from '../engine/scene-schema';
 import type { Transform } from '../engine/protocol';
 import { clampDepth, clampVec3 } from '../input/pointer';
+import { createDragPlane, updateDragDepth, updateDragFromRay, type DragPlane } from '../input/drag-plane';
 import { isPrimaryInteraction, resolvePointerIntent } from '../input/touch';
 import { createMetricBuffer, recordMetric, summarizeMetric } from '../metrics/runtime';
 import { CUP_WALL_THICKNESS } from '../scenes/primitives';
@@ -29,15 +30,8 @@ interface Props {
   onDepth: (depth: number) => void;
   onSample: (interval: number, drawCalls: number) => void;
 }
-interface DragState {
+interface DragState extends DragPlane {
   id: string;
-  plane: Plane;
-  offset: Vector3;
-  normal: Vector3;
-  base: Vector3;
-  target: Vector3;
-  startDepth: number;
-  moved: boolean;
   paused: boolean;
 }
 interface CaptureTarget {
@@ -249,8 +243,7 @@ function Scene(
   useEffect(() => {
     const active = drag.current;
     if (!active) return;
-    active.target.copy(active.base).addScaledVector(active.normal, depth - active.startDepth);
-    active.moved = true;
+    updateDragDepth(active, depth);
     if (playing) onMoveGrab(clampVec3(asVec(active.target), -40, 40));
   }, [depth, playing, onMoveGrab, drag]);
   useFrame((state, delta) => {
@@ -268,16 +261,9 @@ function Scene(
       return;
     const current = props.transforms.current.get(body.id)?.position ?? body.position;
     const center = new Vector3(current.x, current.y, current.z);
-    const normal = camera.getWorldDirection(new Vector3());
     drag.current = {
+      ...createDragPlane(camera, event.point, center, props.depth),
       id: body.id,
-      plane: new Plane().setFromNormalAndCoplanarPoint(normal, event.point),
-      offset: event.point.clone().sub(center),
-      normal,
-      base: center.clone(),
-      target: center.clone(),
-      startDepth: props.depth,
-      moved: false,
       paused: !props.playing,
     };
     (event.target as unknown as CaptureTarget).setPointerCapture(event.pointerId);
@@ -288,12 +274,9 @@ function Scene(
     const active = drag.current;
     if (!active) return;
     event.stopPropagation();
-    const hit = event.ray.intersectPlane(active.plane, new Vector3());
-    if (!hit) return;
-    active.base.copy(hit).sub(active.offset);
-    active.target.copy(active.base).addScaledVector(active.normal, props.depth - active.startDepth);
-    active.moved = true;
-    if (props.playing) props.onMoveGrab(clampVec3(asVec(active.target), -40, 40));
+    const target = updateDragFromRay(active, event.ray, props.depth);
+    if (!target) return;
+    if (props.playing) props.onMoveGrab(clampVec3(asVec(target), -40, 40));
   };
   const up = (event: ThreeEvent<PointerEvent>, cancelled = false) => {
     const active = drag.current;
