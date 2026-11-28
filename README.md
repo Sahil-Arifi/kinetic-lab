@@ -21,7 +21,7 @@ Kinetic Lab is a browser physics workshop built with TypeScript, React Three Fib
 
 The committed [verification record](artifacts/verification.md) reports 98 unit/component/integration tests, 14 browser tests and two accessibility tests passing. The authored marble run completed in all five recorded trials at tick 593. These results describe the documented fixtures and environments, not universal physics accuracy or cross-platform determinism. The CI badge links to the current workflow status.
 
-**Current scope:** a physics workshop with one starter experiment and primitive scene editing. Hand landmark validation, pinch gesture handling and shared ray/drag-plane mapping are implemented and tested, but are not connected to a webcam, inference worker or scene hand controls. See [current limitations](#current-limitations).
+**Current scope:** a physics workshop with one starter experiment and primitive scene editing. Hand landmark validation, pinch gesture handling, shared ray/drag-plane mapping, opt-in camera acquisition and bounded vision frame transport are implemented and tested as foundations. They are not connected to a running inference worker or scene hand controls. See [current limitations](#current-limitations).
 
 ## Run locally
 
@@ -200,6 +200,6 @@ Playwright exercises real Chromium/WebGL and the built worker: playback, pause, 
 
 First, independently review this foundation: validate the recorded evidence, interaction behavior, resource cleanup, real-device usability and numerical limits. Only after that review, introduce an opt-in, local MediaPipe hand-input adapter that maps calibrated hand poses into this existing typed grab protocol. That milestone must handle permissions, confidence loss, gesture hysteresis, cancellation and a visible pointer/keyboard fallback. It must preserve worker ownership and the deterministic physics validation suite.
 
-Representative-device benchmarks, hand-tracking validation and final independent flagship review remain future completion gates. There are no OpenAI API calls, camera permissions, MediaPipe dependencies, analytics, accounts, databases, multiplayer or unnecessary services in this milestone.
+Representative-device benchmarks, hand-tracking validation and final independent flagship review remain future completion gates. The current UI does not request camera permission. There are no OpenAI API calls, installed MediaPipe dependencies, analytics, accounts, databases, multiplayer or unnecessary services in this milestone.
 
 Application code is MIT licensed; see [LICENSE](LICENSE). Locally bundled DM Sans and Space Grotesk fonts retain their [SIL Open Font licenses](public/licenses/), which also ship in the production build.
